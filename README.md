@@ -14,14 +14,41 @@ Usage:
 
         package net.macdidi5.rpi.sensor.dht11;
     
-        // DHT11 溫、濕度感應器類別
         public class DHT11SensorReader {
-            // 使用 C 撰寫的方法
             public static native float[] readData(int pin);
         }
 
-2. x
-3. x
-4. x
-5. x
+2. Create the following methods to read information:
 
+    public static float[] readData() {
+        float[] data = DHT11SensorReader.readData(DTHPIN);
+        int stopCounter = 0;
+        
+        while (!isValid(data)) {
+            stopCounter++;
+            
+            if (stopCounter > 10) {
+                System.out.println("Invalid data:" + data[0] + ", " + data[1]);
+            }
+            
+            data = DHT11SensorReader.readData(DTHPIN);
+        }
+        
+        return data;
+    }
+    
+    private static boolean isValid(float[] data) {
+        return data[0] > 0 && data[0] < 100 && data[1] > 0 && data[1] < 100;
+    }    
+
+3. Load library:
+
+        static {
+            System.loadLibrary("dht11sensor");
+        }
+
+4. Read temperature & humidity:
+
+        // temperature:[0]
+        // humidity:[1]
+        float[] readData = readData();
